@@ -12,8 +12,6 @@
 #### Estimate Areas of Occurrence ###
 #### Estimate Climate Ranges ###
 #### Predict County Occurrences ###
-#### Create Plot Outputs ###
-#### Save as List and Export for Shiny ###
 
 
 ### References 
