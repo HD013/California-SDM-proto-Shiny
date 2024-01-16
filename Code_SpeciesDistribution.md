@@ -2,6 +2,9 @@
 ## MAXENT FUTURE ANALYSIS OF RANGE SIZE FOR ABIES CONCOLOR ###
 #### David Henderson 2023-2024
 
+<br>
+<br>
+
 
 ### CONTENTS ###
 #### Setup ###
@@ -20,7 +23,7 @@
 
 
 <br>
-### setup ###
+### Setup ###
 <br>
 
 
@@ -63,6 +66,127 @@ records <- read.csv('Aibes_concolor_occ_clean_20231229.CSV',
 accs <- records[which(records$coordinateUncertaintyInMeters < 5000), ]
 # Total ('inaccurate' + accurate) records
 inaccs <- records
+
+
+```
+
+<br>
+
+#### Prepare the climate data by extracting and droping variables.
+
+<br>
+
+```
+#The spatial extent all around CA in Lon/Lat coordinates is roughly:
+ca_ext <- c(-130, -110, 30, 44)
+
+# Crop the climate layers to the extent of California
+bio_pres <- crop(bio_pres, ca_ext)
+bio_fut <- crop(bio_fut, ca_ext)
+
+# Use selected variables
+bio_pres <- dropLayer(bio_pres, c("bio3", "bio5", "bio6", "bio7", "bio8",
+                                      "bio9", "bio10", "bio11", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19"))
+bio_fut <- dropLayer(bio_fut, c("bio3", "bio5", "bio6", "bio7", "bio8",
+                                    "bio9", "bio10", "bio11", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19"))
+
+# Fix temperature
+bio_pres[[1]] <- bio_pres[[1]]/10
+bio_fut[[1]] <- bio_fut[[1]]/10
+
+# Create training and testing set:
+occ_accs=cbind.data.frame(accs$decimalLongitude,accs$decimalLatitude)
+set.seed(123)
+fold <- kfold(occ_accs, 5)
+pres_test <- occ_accs[fold == 1, ]
+pres_train <- occ_accs[fold != 1, ]
+
+# inaccurate + accurate records
+occ_inaccs=cbind.data.frame(inaccs$decimalLongitude,inaccs$decimalLatitude)
+set.seed(123)
+fold_icc <- kfold(occ_inaccs, 5)
+pres_test_icc <- occ_inaccs[fold_icc == 1, ]
+pres_train_icc <- occ_inaccs[fold_icc != 1, ]
+
+# background points 
+set.seed(123)
+bg <- randomPoints(bio_pres, n=5000, ext=ca_ext, extf = 1.25)
+colnames(bg) = c('lon', 'lat')
+fold_bg <- kfold(bg, 5)
+backg_test <- bg[fold_bg == 1, ]
+backg_train <- bg[fold_bg != 1, ]
+
+# Test plot
+ext <- extent(-123, -121, 37, 39) # Bay Area Baby!
+
+r <- raster(bio_pres, 1)
+
+plot(!is.na(r), col=c('white', 'light grey'), legend=FALSE)
+plot(ext, add=TRUE, col='red', lwd=2)
+points(backg_train, pch='-', cex=0.5, col='yellow')
+points(backg_test, pch='-',  cex=0.5, col='black')
+points(pres_train, pch= '+', col='green')
+points(pres_test, pch='+', col='blue')
+
+# Test plot: Total records
+plot(!is.na(r), col=c('white', 'light grey'), legend=FALSE)
+plot(ext, add=TRUE, col='red', lwd=2)
+points(backg_train, pch='-', cex=0.5, col='yellow')
+points(backg_test, pch='-',  cex=0.5, col='black')
+points(pres_train_icc, pch= '+', col='green')
+points(pres_test_icc, pch='+', col='blue')
+```
+
+<br>
+
+### Maxent ###
+
+<br>
+
+```
+maxent()
+
+## Present
+xm <- maxent(bio_pres, pres_train)
+xmi <- maxent(bio_pres, pres_train_icc)
+
+# Check the results
+# Detailed results
+xm@results
+#xmi@results
+
+# Test plot
+plot(xm)
+#plot(xmi)
+
+# Response plot
+response(xm)
+#response(xmi)
+
+# Evaluate
+e_xm <- evaluate(pres_test, backg_test, xm, bio_pres)
+e_xmi <- evaluate(pres_test_icc, backg_test, xmi, bio_pres)
+
+# Threshold
+tr_xm <- threshold(e_xm, 'spec_sens')
+tr_xmi <- threshold(e_xmi, 'spec_sens')
+
+# Predict
+px <- predict(bio_pres, xm, ext=ca_ext, progress='')
+pxi <- predict(bio_pres, xmi, ext=ca_ext, progress='')
+
+
+## Future 
+pxf <- predict(bio_fut, xm, ext=ca_ext, progress='')
+pxfi <- predict(bio_fut, xmi, ext=ca_ext, progress='')
+
+```
+<br>
+### Estimate Areas of Occurrence ###
+
+<br>
+
+```
 
 
 ```
