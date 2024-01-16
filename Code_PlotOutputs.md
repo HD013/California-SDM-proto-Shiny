@@ -394,11 +394,15 @@ plot(inaccsFutCoo, col=alpha('orange', 0.1), add=TRUE)
 plot(inaccsFutCoo, col=alpha('orange', 0.8), add=TRUE)
 
 fullDiff_County <- recordPlot()
+```
 
+<br>
 
-########################
 ### Save Output List ###
-########################
+
+<br>
+
+```
 outputList2 <- list(Mxnt_Range_Accurate_Present, Mxnt_Range_Inccurate_Present,
                     Mxnt_Range_Accurate_Future, Mxnt_Range_Inccurate_Future, 
                     Diff_Accurate_presFut, Diff_Inaccurate_presFut, 
