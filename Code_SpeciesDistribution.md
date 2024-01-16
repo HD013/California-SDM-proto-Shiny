@@ -49,10 +49,10 @@ usa2 <- readOGR(paste0(path.to.files, "gadm41_USA_shp/gadm41_USA_2.shp"))
 ca2 <- usa2[which(usa2$NAME_1 == "California"), ]
 
 # Present Climate Data
-bio_pres <- getData('worldclim', download=F, path="C:/Users/marvi/OneDrive/Documents/DataAnalysis/AsclepiasCode/Climate_Data/",
+bio_pres <- getData('worldclim', download=F, path="Climate_Data/",
                     var='bio', res=2.5, lon=c(-136,-110), lat=c(30,44))
 # Future Climate Data
-bio_fut <- getData('CMIP5', download=F, path="C:/Users/marvi/OneDrive/Documents/DataAnalysis/AsclepiasCode/Climate_Data/",
+bio_fut <- getData('CMIP5', download=F, path="Climate_Data/",
                    var='bio', res=2.5, lon=c(-114,-126), lat=c(32,42),
                    rcp=45, model='NO', year=50)
 names(bio_pres)
@@ -187,6 +187,105 @@ pxfi <- predict(bio_fut, xmi, ext=ca_ext, progress='')
 <br>
 
 ```
+# Precise & Present
+accs_pres_sp <- rasterToPolygons(px>tr_xm,function(x) x == 1,dissolve=T)
+raster::area(accs_pres_sp) / 1000000
+# 120353 km2
 
+# Total & Present
+inaccs_pres_sp <- rasterToPolygons(pxi>tr_xmi,function(x) x == 1,dissolve=T)
+raster::area(inaccs_pres_sp) / 1000000
+# 189930.2 km2
+
+# Precise & Future
+accs_fut_sp <- rasterToPolygons(pxf>tr_xm,function(x) x == 1,dissolve=T)
+raster::area(accs_fut_sp) / 1000000
+# 77058.58 km2
+
+# Total & Future
+inaccs_fut_sp <- rasterToPolygons(pxfi>tr_xmi,function(x) x == 1,dissolve=T)
+raster::area(inaccs_fut_sp) / 1000000
+# 114868.1 km2
+
+```
+
+<br>
+
+### Estimate Climate Ranges ###
+<br>
+
+```
+## Present
+accsPresRange <- extract(bio_pres, accs_pres_sp)
+
+inaccsPresRange <- extract(bio_pres, inaccs_pres_sp)
+
+# Temperature
+range(accsPresRange[[1]][,1]) 
+# -2.1 14.6 degrees Celsius 
+
+range(inaccsPresRange[[1]][,1]) 
+# -2.1 15.6 degrees Celsius 
+
+# Precipitation
+range(accsPresRange[[1]][,4]) 
+# 334 1848 mm
+
+range(inaccsPresRange[[1]][,4]) 
+# 283 1848 mm
+
+## Future
+accsFutRange <- extract(bio_fut, accs_fut_sp)
+inaccsFutRange <- extract(bio_fut, inaccs_fut_sp)
+
+
+# Temperature
+range(accsFutRange[[1]][,1]) 
+# 0.2 14.1 degrees Celsius
+
+range(inaccsFutRange[[1]][,1]) 
+# 0.2 15.3 degrees Celsius
+
+# Precipitation
+range(accsFutRange[[1]][,4]) 
+# 310 1720 mm
+
+range(inaccsFutRange[[1]][,4]) 
+# 270 1720 mm
+
+```
+
+<br>
+### Predict County Occurrences ###
+<br>
+
+```
+gadmCounty <- paste(ca2$NAME_2)
+
+# Precise & Present
+recordsCounty <- paste(accs$county)
+
+accspresCoo <- ca2[which(gadmCounty %in% recordsCounty), ]
+accspresCoo <- as(accspresCoo, 'SpatialPolygons')
+
+# Total & Present
+recordsCounty_icc <- paste(inaccs$county)
+
+inaccspresCoo <- ca2[which(gadmCounty %in% recordsCounty_icc), ]
+inaccspresCoo <- as(inaccspresCoo, 'SpatialPolygons')
+
+# Precise & Future
+accsFutint <- raster::intersect(accs_fut_sp, ca2)
+recordsCounty_acfut <- paste(accsFutint$NAME_2)
+
+accsFutCoo <- ca2[which(gadmCounty %in% recordsCounty_acfut), ]
+accsFutCoo <- as(accsFutCoo, 'SpatialPolygons')
+
+# Total & Future
+inaccsFutint <- raster::intersect(inaccs_fut_sp, ca2)
+recordsCounty_inacfut <- paste(inaccsFutint$NAME_2)
+
+inaccsFutCoo <- ca2[which(gadmCounty %in% recordsCounty_inacfut), ]
+inaccsFutCoo <- as(inaccsFutCoo, 'SpatialPolygons')
 
 ```
