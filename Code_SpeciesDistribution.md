@@ -72,7 +72,7 @@ inaccs <- records
 
 <br>
 
-#### Prepare the climate data by extracting and droping variables.
+#### Prepare the climate data by extracting and dropping variables.
 
 <br>
 
