@@ -13,6 +13,7 @@
 #### Estimate Climate Ranges ###
 #### Predict County Occurrences ###
 
+<br>
 
 ### References 
  [Original Hijmans playbook](https://cran.r-hub.io/web/packages/dismo/vignettes/sdm.pdf)
@@ -21,6 +22,7 @@
 
 
 <br>
+
 ### Setup ###
 <br>
 
