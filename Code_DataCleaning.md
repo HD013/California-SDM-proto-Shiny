@@ -1,5 +1,5 @@
 
-## Here we go through an abrriviated number of steps to be sure that our data (including and especially the less precise records) is useable in the following analyses. 
+## Here we go through an abrriviated number of steps to be sure that our data (including and especially the less precise records) are useable in the following analyses. 
 
 <br>
 
