@@ -86,7 +86,7 @@ removeExtraText <- function(x) {
 
 records$county <- removeExtraText(records$county)
 
-# what state/province names don't match with GADM?
+# what state/county names don't match with GADM?
 gadmCombined <- paste(ca2@data$NAME_1, ca2@data$NAME_2)
 gadmCombined <- gadmCombined[!duplicated(gadmCombined)]
 gadmCombined <- sort(gadmCombined)
