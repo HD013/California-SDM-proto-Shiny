@@ -182,6 +182,7 @@ pxfi <- predict(bio_fut, xmi, ext=ca_ext, progress='')
 
 ```
 <br>
+
 ### Estimate Areas of Occurrence ###
 
 <br>
