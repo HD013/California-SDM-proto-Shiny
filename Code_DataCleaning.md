@@ -150,21 +150,12 @@ index <- which(gadmCounty %in% recordsCounty)
 countiesSpEa <- ca2[index, ]
 expExt_co <- extent(countiesSpEa)
 
-# Clean Duplicate Records 
-cleanDuplicateRecord <- data.frame(cleanDuplicateRecord = rep(FALSE, nrow(records)))
-at <- which.max(grepl(names(records), pattern='clean'))
-records_c <- insertCol(cleanDuplicateRecord, into=records, at=at, before=FALSE)
-
-match(colnames(records_c), colnames(records))
-
 
 # remove records with duplicated coordinates (to a given error) and same coordinate uncertainty (to a given level)
 
 # number of decimal digits to which coordinates of inaccurate records must be the same to be considered being at the same location
 proximateDigits <- 3
 
-dups <- records[which(duplicated(records$decimalLongitude, proximateDigits) & 
-        duplicated(records$decimalLatitude, proximateDigits)), ]
 
 records_c <- records[-which(duplicated(records$decimalLongitude, proximateDigits) & 
                              duplicated(records$decimalLatitude, proximateDigits)), ]
