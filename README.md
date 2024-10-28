@@ -14,6 +14,6 @@ Check out the Shiny [here](https://hd013.shinyapps.io/app_3pub/)
 <br>
 
 
-If you have any questions, comments or suggestions for improvement - Please reach out and drop me a line.
+If you have any questions, comments or suggestions for improvement - Please reach out, and drop me a line.
 
 <br>
